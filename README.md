@@ -3,6 +3,7 @@
 Amanda is a python data mining, currently still in beta (version 0.1), which mines
 data from economic news sites. This bot works off the sitemap data provided openly
 by the news sites
+Note: Amanda is written in Python3, NOT Python 2.7.x
 
 ## Installation Instructions
 1. Run "pip install -r requirements.txt" in a terminal
