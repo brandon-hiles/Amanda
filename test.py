@@ -16,7 +16,8 @@ def site_availability_suite():
 
 def parser_suite():
     suite = unittest.TestSuite()
-    suite.addTest(ParserTestCases('test_grabSitemapUrls'))
+    suite.addTest(ParserTestCases('test_grabSiteMapUrls'))
+    suite.addTest(ParserTestCases('test_parseSiteMapUrls'))
     return suite
 
 if __name__ == '__main__':
