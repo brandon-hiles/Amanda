@@ -21,9 +21,9 @@ class ParserTestCases(unittest.TestCase):
 
     	actual_data = self.parser.grab_sitemap_urls()
     	expected_data = [
-    	'https://www.reuters.com/sitemap_index.xml'
-    	'https://www.reuters.com/sitemap_news_index.xml'
-    	'https://www.reuters.com/sitemap_video_index.xml'
+    	'https://www.reuters.com/sitemap_index.xml',
+    	'https://www.reuters.com/sitemap_news_index.xml',
+    	'https://www.reuters.com/sitemap_video_index.xml',
     	'https://www.reuters.com/sitemap_market_index.xml'
     	]
     	self.assertEqual(expected_data, actual_data)
