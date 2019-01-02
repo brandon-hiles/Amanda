@@ -4,8 +4,6 @@ __author__ = "Brandon Hiles"
 import requests
 import nltk
 import re
-import xml.etree.ElementTree as ET
-import os
 import bs4
 import xml
 import zlib
@@ -85,7 +83,7 @@ class SiteMapParser(object):
         for url, num in enumerate(data):
             try:
                 temp = data[url][0]
-                root = ET.fromstring(temp)
+                root = xml.etree.ElementTree.fromstring(temp)
                 for index in range(0, len(root)):
                     sites.append(root[index][0].text)
             except xml.etree.ElementTree.ParseError:
@@ -96,6 +94,8 @@ class SiteMapParser(object):
 
     def parse_data(self, data):
 
+        # We need to add threading to this method
+
         errors = []
         sites = []
         for num, val in enumerate(data):
@@ -104,12 +104,12 @@ class SiteMapParser(object):
                 string = ".xml.gz"
                 if string in data[num]:
                     decompressed_data = zlib.decompress(site, 16+zlib.MAX_WBITS)
-                    root = ET.fromstring(decompressed_data)
+                    root = xml.etree.ElementTree.fromstring(decompressed_data)
                     for index in range(0, len(root)):
                         sites.append(root[index][0].text)
                         print(root[index][0].text)
                 else:
-                    root = ET.fromstring(site)
+                    root = xml.etree.ElementTree.fromstring(site)
                     for index in range(0, len(root)):
                         sites.append(root[index][0].text)
             except xml.etree.ElementTree.ParseError:

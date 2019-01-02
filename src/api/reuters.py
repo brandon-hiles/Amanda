@@ -2,10 +2,8 @@ __version__ = 0.1
 __author__ = "Brandon Hiles"
 
 import bs4
-import os
 import re
 import requests
-import xml.etree.ElementTree as ET
 from pymongo import MongoClient
 
 from src.api.parser import SiteMapParser
