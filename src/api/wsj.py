@@ -68,4 +68,18 @@ class WallStreetJournal(SiteMapParser):
                  "type" : self._extract_type(website),
                  "url" : urls[index]
             }
-            wsj.insert_one(query).inserted_id
+            check_query = {"title" : self._extract_title(website)}
+            check = self.check_collection(collection='wsj',query=check_query)
+            if check == False: # Checks that doesn't already exist in db
+                wsj.insert_one(query).inserted_id
+
+    def check_collection(self, collection,query):
+        # Check if collection exists in db
+
+        db = self.client['news']
+        collections = db[collection]
+        result = collections.find(query)
+        if collections.find(query).count() > 0:
+            return True
+        else:
+            return False
