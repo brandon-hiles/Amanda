@@ -1,4 +1,4 @@
-__version__ = 0.1
+__version__ = 0.2
 __author__ = "Brandon Hiles"
 
 import bs4
@@ -85,14 +85,14 @@ class Reuters(SiteMapParser):
                     }
                 }
             check_query = {"title" : self._extract_title(website)}
-            check = self.check_collection(collection='data',query=check_query)
+            check = self.check_collection(collection='reuters',query=check_query)
             if check == False: # Checks that doesn't already exist in db
                 reuters.insert_one(query).inserted_id
 
     def check_collection(self, collection,query):
         # Check if collection exists in db
 
-        db = self.client['reuters']
+        db = self.client['news']
         collections = db[collection]
         result = collections.find(query)
         if collections.find(query).count() > 0:
