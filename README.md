@@ -17,7 +17,7 @@ This will install all 3rd party software needed for running this project
     2. Wall Street Journal
     
 ## Version 0.2 Goals (In order of importance)
-1. Release Date: End of Feb. 2019 (Post-poned to Mar 15, 2019)
+1. Release Date: End of Feb. 2019 (Postponed to Mar 15, 2019)
 2. Increasing economic news sites by including the following 2 sites:
     1. New York Times
     2. Bloomberg
