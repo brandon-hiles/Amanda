@@ -1,10 +1,12 @@
-__version__ = 0.1
+__version__ = 0.2
 __author__ = "Brandon Hiles"
 
 import unittest
 import datetime
+import requests
+import bs4
 
-from src.api.parser import SiteMapParser
+from src.api.data_mining.parser import SiteMapParser
 
 class ParserTestCases(unittest.TestCase):
 
@@ -37,6 +39,12 @@ class ParserTestCases(unittest.TestCase):
         yesterday_date = str(int(today_date)-1)
         prefix = "https://www.reuters.com/sitemap_"
         expected_data = prefix + yesterday_date + "-" + today_date + ".xml"
+        self.assertEqual(expected_data, actual_data)
+
+    def test_grabElements(self):
+        web = requests.get(self.website).content
+        actual_data = type(self.parser.grab_elements(website=web)[0])
+        expected_data = bs4.element.Tag
         self.assertEqual(expected_data, actual_data)
 
     @classmethod

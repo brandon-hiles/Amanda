@@ -6,7 +6,8 @@ import re
 import requests
 from pymongo import MongoClient
 
-from src.api.parser import SiteMapParser
+from src.api.db.mongo import Mongo
+from src.api.data_mining.parser import SiteMapParser
 
 class Reuters(SiteMapParser):
 
@@ -22,7 +23,8 @@ class Reuters(SiteMapParser):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.client = MongoClient(host, port)
+        self.db = "news"
+        self.mongo = Mongo(host=self.host, port=self.port)
         super().__init__(website='https://www.reuters.com')
 
     def _extract_text(self, website):
@@ -68,7 +70,8 @@ class Reuters(SiteMapParser):
 
     def store_websites(self, upper_bound):
 
-        db = self.client['news']
+        client = self.mongo.client()
+        db = client['news']
         reuters = db['reuters']
 
         urls = super().get_websites()
@@ -85,20 +88,9 @@ class Reuters(SiteMapParser):
                     }
                 }
             check_query = {"title" : self._extract_title(website)}
-            check = self.check_collection(collection='reuters',query=check_query)
+            check = self.mongo.check_collection(db=self.db, collection='reuters',query=check_query)
             if check == False: # Checks that doesn't already exist in db
                 reuters.insert_one(query).inserted_id
-
-    def check_collection(self, collection,query):
-        # Check if collection exists in db
-
-        db = self.client['news']
-        collections = db[collection]
-        result = collections.find(query)
-        if collections.find(query).count() > 0:
-            return True
-        else:
-            return False
 
     def url_type(self, url):
         # There are 2 types of urls presented in sitemap data:

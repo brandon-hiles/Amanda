@@ -3,9 +3,9 @@ __author__ = "Brandon Hiles"
 
 import bs4
 import requests
-from pymongo import MongoClient
 
-from src.api.parser import SiteMapParser
+from src.api.db.mongo import Mongo
+from src.api.data_mining.parser import SiteMapParser
 
 class WallStreetJournal(SiteMapParser):
 
@@ -21,7 +21,8 @@ class WallStreetJournal(SiteMapParser):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.client = MongoClient(host, port)
+        self.db = "news"
+        self.mongo = Mongo(host=self.host, port=self.port)
         super().__init__(website='https://www.wsj.com')
 
     def _extract_title(self, website):
@@ -56,7 +57,8 @@ class WallStreetJournal(SiteMapParser):
 
     def store_websites(self, upper_bound):
 
-        db = self.client['news']
+        client = self.mongo.client()
+        db = client['news']
         wsj = db['wsj']
 
         urls = super().get_websites()
@@ -69,17 +71,6 @@ class WallStreetJournal(SiteMapParser):
                  "url" : urls[index]
             }
             check_query = {"title" : self._extract_title(website)}
-            check = self.check_collection(collection='wsj',query=check_query)
+            check = self.mongo.check_collection(db=self.db,collection='wsj',query=check_query)
             if check == False: # Checks that doesn't already exist in db
                 wsj.insert_one(query).inserted_id
-
-    def check_collection(self, collection,query):
-        # Check if collection exists in db
-
-        db = self.client['news']
-        collections = db[collection]
-        result = collections.find(query)
-        if collections.find(query).count() > 0:
-            return True
-        else:
-            return False
