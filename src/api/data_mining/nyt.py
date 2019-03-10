@@ -1,6 +1,7 @@
 __version__ = 0.2
 __author__ = "Brandon Hiles"
 
+import requests
 from pymongo import MongoClient
 
 from src.api.db.mongo import Mongo
