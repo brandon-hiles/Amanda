@@ -23,3 +23,6 @@ This will install all 3rd party software needed for running this project
 2. Add Threading capabilities to run multiple services across CPU's.
 3. Setup service script to run Amanda as a daemon service running on an EC2 instance.
 4. Optimize Current Features
+
+
+For up-to-date Features, check out my trello board: https://trello.com/b/RaNtivAv/erika
