@@ -1,10 +1,9 @@
-__version__ = 0.2
+__version__ = 0.3
 __author__ = "Brandon Hiles"
 
 import bs4
 import re
 import requests
-from pymongo import MongoClient
 
 from src.api.db.mongo import Mongo
 from src.api.data_mining.parser import SiteMapParser
@@ -23,8 +22,8 @@ class Reuters(SiteMapParser):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.db = "news"
-        self.mongo = Mongo(host=self.host, port=self.port)
+        self.mongo = Mongo(host=self.host, port=self.port, database=self.db)
+        self.db = self.mongo.db
         super().__init__(website='https://www.reuters.com')
 
     def _extract_text(self, website):
@@ -70,33 +69,30 @@ class Reuters(SiteMapParser):
 
     def store_websites(self, upper_bound):
 
-        client = self.mongo.client()
-        db = client['news']
-        reuters = db['reuters']
+        reuters = self.db['reuters']
 
         urls = super().get_websites()
 
         for index in range(0, upper_bound+1):
             website = requests.get(urls[index]).content.decode('utf-8')
-            query = { 
+            query = {
                 "title" : self._extract_title(website),
                 "article" : self._extract_text(website),
                 "authors" : self._extract_authors(website),
-                "meta" : {
-                    "url" : urls[index],
-                    "tags" : self._extract_tags(website)
-                    }
+                "url" : urls[index],
+                "tags" : self._extract_tags(website)
                 }
-            check_query = {"title" : self._extract_title(website)}
+            check_query = {"url" : urls[index]}
             check = self.mongo.check_collection(db=self.db, collection='reuters',query=check_query)
             if check == False: # Checks that doesn't already exist in db
                 reuters.insert_one(query).inserted_id
+
 
     def url_type(self, url):
         # There are 2 types of urls presented in sitemap data:
         # 1. Articles
         # 2. Videos
-        # This method is used for sorting in database for CV vs. NLP 
+        # This method is used for sorting in database for CV vs. NLP
         # distinstion
 
         if url.split('/')[3] == 'article':

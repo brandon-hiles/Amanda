@@ -8,6 +8,8 @@ import bs4
 import xml
 import zlib
 
+from src.api.db.mongo import Mongo # Import Mongo Database Module
+
 class SiteMapParser(object):
 
     """
@@ -16,13 +18,20 @@ class SiteMapParser(object):
 
     Description: SiteMapParser utilizes the robots.txt file provided
     by the news sites to crawl through the available sitemap data.
-    Initialization: 
+    Initialization:
     1. website: Provide a website that you want crawl though and collect
     data
+    2. host:
     """
 
-    def __init__(self, website):
+    def __init__(self, website, host, port, collection):
         self.website = website
+        self.host = host
+        self.port = port
+        self.db = "news"
+        self.collection = collection
+        self.mongo = Mongo(host=self.host, port=self.port, database=self.db)
+
 
     def grab_sitemap_urls(self):
 
@@ -31,7 +40,7 @@ class SiteMapParser(object):
                 ).content.decode("utf-8")
             tokenizer = nltk.tokenize.TreebankWordTokenizer()
             temp_data = tokenizer.tokenize(web_data)
-            sites = ['https://' + temp_data.strip("//") 
+            sites = ['https://' + temp_data.strip("//")
             for temp_data in temp_data if "//" in temp_data]
             # sites retrieves all sites, and we need to filter
             # this list to look for only sitemap websites.
@@ -58,7 +67,7 @@ class SiteMapParser(object):
         return data
 
     def grab_websites(self):
-        
+
         errors, data = self.parse_sitemap_data()
 
         sitemapData = []
@@ -72,7 +81,7 @@ class SiteMapParser(object):
 
         soup = bs4.BeautifulSoup(website, 'html.parser')
         children = list(soup.children)
-        element = [children[num] for num, value in enumerate(children) 
+        element = [children[num] for num, value in enumerate(children)
         if type(children[num]) is bs4.element.Tag]
         return element
 
@@ -113,6 +122,7 @@ class SiteMapParser(object):
                     root = xml.etree.ElementTree.fromstring(site)
                     for index in range(0, len(root)):
                         sites.append(root[index][0].text)
+                        print(root[index][0].text)
             except xml.etree.ElementTree.ParseError:
                 errors.append(num) # Container counting amount of errors
                 continue
@@ -125,6 +135,10 @@ class SiteMapParser(object):
         data = self.parse_data(data=sitemaps)[1]
         urls = []
         for num, value in enumerate(data):
-            print(num)
-            urls.append(data[num])
+            if len(self.mongo.check_database_by_url(collection=self.collection, url=data[num])) == 1: # Data is in database
+                pass
+                print("NOT ADDING TO LIST")
+            else: # data is not in database
+                print(data[num])
+                urls.append(data[num])
         return urls
