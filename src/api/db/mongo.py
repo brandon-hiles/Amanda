@@ -8,15 +8,19 @@ class Mongo(object):
     def __init__(self, host, port, database):
         self.host = host
         self.port = port
-        self.db = MongoClient(self.host, self.port)[database]
+        self.database = database
+        self.client = MongoClient(self.host, self.port)
 
-    def select_collection(self, db, collection):
-        return self.db[collection]
+    def select_database(self, database):
+        return self.client[self.database]
+
+    def select_collection(self, collection):
+        return self.select_database(self.database)[collection]
 
     def check_collection(self, collection, query):
         # Check if collection exists in db
 
-        collection = self.select_collection(db=db, collection=collection)
+        collection = self.select_collection(collection=collection)
         result = collection.find(query)
         if collection.find(query).count() > 0:
             return True

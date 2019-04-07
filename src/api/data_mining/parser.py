@@ -136,8 +136,8 @@ class SiteMapParser(object):
         urls = []
         for num, value in enumerate(data):
             if len(self.mongo.check_database_by_url(collection=self.collection, url=data[num])) == 1: # Data is in database
-                pass
                 print("NOT ADDING TO LIST")
+                pass
             else: # data is not in database
                 print(data[num])
                 urls.append(data[num])
