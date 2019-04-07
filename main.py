@@ -18,11 +18,16 @@ from src.api.db.mongo import Mongo
 from test import *
 
 
-# Basic Variables
+# Database Variables
 host = 'localhost'
 port = 27017
+
+# Parser Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--coverage")
+parser.add_argument("--coverage") # Unit Test Coverage
+parser.add_argument("--reuters") # Reuters Data
+parser.add_argument("--wsj") # Wall Street Journal Data
+parser.add_argument("--nyt") # New York Times Data
 
 if __name__ == '__main__':
 
@@ -33,11 +38,33 @@ if __name__ == '__main__':
     # Syntax: python main.py --coverage=true
     if args.coverage:
         print("coverage turned on")
+        print("Executing Unit Tests")
         runner = unittest.TextTestRunner()
         runner.run(site_availability_suite())
         runner.run(parser_suite())
         runner.run(reuter_suite())
 
-    # Run main scripts
-    reuters = SiteMapParser(website='https://www.reuters.com', host=host, port=port, collection='reuters')
-    reuters.get_websites()
+    # If --reuters is passed, then run reuter scripts.
+    # Syntax: python main.py --reuters=true
+    if args.reuters:
+        print("Gathering data from reuters")
+        reuters = Reuters(host=host, port=port)
+        reuters.store_websites(upper_bound=10000)
+
+    # If --wsj is passed, then run wsj scripts.
+    # Syntax: python main.py --wsj=true
+    if args.wsj:
+        print("Gathering data from WSJ")
+        wsj = WallStreetJournal(host=host, port=port)
+        wsj.store_websites(upper_bound=1000)
+
+    # If --nyt is passed, then run nyt scripts.
+    # Syntax: python main.py --nyt=true
+    if args.nyt:
+        print("Gathering data from New York Times")
+        nyt = NewYorkTimes(host=host, port=port)
+        nyt.store_websites(upper_bound=1000)
+
+    # Below code is used for testing.
+    #parser = SiteMapParser(website='https://www.reuters.com', host=host, port=port, collection='reuters')
+    #parser.get_websites()
