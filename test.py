@@ -1,4 +1,4 @@
-__version__ = 0.2
+__version__ = 0.3
 __author__ = "Brandon Hiles"
 
 import unittest
@@ -26,9 +26,3 @@ def reuter_suite():
     suite = unittest.TestSuite()
     suite.addTest(ReutersTestCases('test_extractText'))
     return suite
-
-if __name__ == '__main__':
-    runner = unittest.TextTestRunner()
-    runner.run(site_availability_suite())
-    runner.run(parser_suite())
-    runner.run(reuter_suite())
