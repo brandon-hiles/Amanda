@@ -21,10 +21,9 @@ class NewYorkTimes(SiteMapParser):
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.db = "news" 
-        self.mongo = Mongo(host=host, port=port)
-        self.client = self.mongo.client()
-        super().__init__(website='https://www.nytimes.com/')
+        self.database = "news"
+        self.mongo = Mongo(host=host, port=port, database=self.database)
+        super().__init__(website='https://www.nytimes.com/', host=self.host, port=self.port, collection="nyt")
 
 
     def _extract_text(self, website):
@@ -37,14 +36,14 @@ class NewYorkTimes(SiteMapParser):
 
     def store_websites(self, upper_bound):
 
-        db = self.client[self.db]
+        db = self.mongo.select_database(self.database)
         nyt = db['nyt']
 
         urls = super().get_websites()
 
         for index in range(0, upper_bound+1):
             website = requests.get(urls[index]).content.decode('utf-8')
-            query = { 
+            query = {
                 "article" : self._extract_text(website),
                 "url" : urls[index]
                 }
