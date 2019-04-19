@@ -28,11 +28,15 @@ parser.add_argument("--coverage") # Unit Test Coverage
 parser.add_argument("--reuters") # Reuters Data
 parser.add_argument("--wsj") # Wall Street Journal Data
 parser.add_argument("--nyt") # New York Times Data
+parser.add_argument("--thread") # Threading module
 
 if __name__ == '__main__':
 
     # Analyze arguments passed to python script
     args = parser.parse_args()
+
+    import time
+    startTime = time.time()
 
     # If --coverage is passed, then run unit tests.
     # Syntax: python main.py --coverage=true
@@ -65,6 +69,9 @@ if __name__ == '__main__':
         nyt = NewYorkTimes(host=host, port=port)
         nyt.store_websites(upper_bound=1000)
 
-    # Below code is used for testing.
-    #parser = SiteMapParser(website='https://www.reuters.com', host=host, port=port, collection='reuters')
-    #parser.get_websites()
+    if args.thread:
+        parser = SiteMapParser(website='https://www.reuters.com', host=host, port=port, collection="reuters")
+        parser.main()
+
+
+    print(f"Time Execution: {time.time() - startTime} s")
